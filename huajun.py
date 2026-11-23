@@ -5,12 +5,12 @@
 
 工程映射：受控演化，衡分达标方可启用。
 
-边界：本件为算子骨架 v0——接口先立、实现随进化轮补齐；遵循元法第四条「只增不覆盖」，
+边界：本件为算子 v1——骨架桩已按命名映射补齐实现；遵循元法第四条「只增不覆盖」，
 方法只增不改名不删，行为变更走新版本；凭据不入档，宣称与事实分离。
 """
 
 class Huajun:
-    """化钧（HUAJUN）算子骨架 v0。"""
+    """化钧（HUAJUN）算子 v1。"""
 
     ANCHOR = "Ω₀⊂⊙∞⊂Ω｜DID-BR-000002"
     CODE = "HUAJUN"
@@ -18,6 +18,8 @@ class Huajun:
     def __init__(self, config=None):
         self.config = dict(config or {})
         self.events = []  # 只增不覆盖：会话内事件留痕
+        self.records = []
+        self.sealed = set()
 
     def describe(self):
         """构件名帖：名、代号、职责、铭文、体系锚。"""
@@ -31,9 +33,17 @@ class Huajun:
         }
 
     def evolve(self, candidate, hengfen):
-        """衡分达标方可放行演化，未达标封化待育（骨架桩：实现随进化轮补齐）。"""
-        raise NotImplementedError("HUAJUN.evolve 骨架桩，候进化轮补齐")
+        """衡分达标方可放行演化，未达标封化待育。"""
+        threshold = float(self.config.get("threshold", 0.8))
+        passed = hengfen >= threshold
+        record = {"candidate": candidate, "hengfen": hengfen,
+                  "status": "enabled" if passed else "sealed"}
+        self.records.append(record)
+        self.events.append({"event": "evolve", "status": record["status"]})
+        return record
 
     def seal(self, candidate):
-        """封化：锁演化留档，非时不启（骨架桩：实现随进化轮补齐）。"""
-        raise NotImplementedError("HUAJUN.seal 骨架桩，候进化轮补齐")
+        """封化：锁演化留档，非时不启。"""
+        self.sealed.add(str(candidate))
+        self.events.append({"event": "seal"})
+        return {"candidate": candidate, "sealed": True}
